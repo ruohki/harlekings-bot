@@ -71,8 +71,7 @@ export class TwitchTV extends Command {
     /**
      * @param  {Discord.Message} message Discord Message
      */
-    executeCommand = ( message ) => {
-        console.log(this.twitchResponse);
+    executeCommand = ( message ) => {        
         if (this.twitchResponse && this.twitchResponse.stream) {
             message.channel.sendMessage('Harlekings_TV is on bitches!');
         } else {
