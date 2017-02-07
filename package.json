@@ -1,0 +1,42 @@
+{
+  "name": "harlekings-bot",
+  "version": "0.0.1",
+  "description": "Harlekings Discord Multifunktions Bot",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "gulp default",
+    "run": "node dist/app.js",
+    "buildrun": "gulp default && npm start",
+    "start": "cd dist && node app.js"
+  },
+  "repository": {
+    "url": "git+https://github.com/ruohki/harlekings-bot.git",
+    "type": "git"
+  },
+  "author": "Tillmann Hübner <ruohki@gmail.com> (http://ruohki.de/)",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "discord.js": "^11.0.0",
+    "express": "^4.14.0",
+    "moment": "^2.17.1",
+    "opusscript": "0.0.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "twitch.tv": "^2.0.1",
+    "ytdl-core": "^0.7.21"
+  },
+  "engines": {
+    "node": "6.9.4"
+  },
+  "devDependencies": {
+    "babel-preset-babili": "0.0.10",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-node6": "^11.0.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "babili": "0.0.10",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-clean": "^0.3.2"
+  }
+}
