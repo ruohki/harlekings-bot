@@ -1,5 +1,5 @@
 # Harlekings Discord Bot
-[![Build Status](https://travis-ci.org/ruohki/harlekings-bot.svg?branch=dev)](https://travis-ci.org/ruohki/harlekings-bot)
+[![Build Status](https://travis-ci.org/ruohki/harlekings-bot.svg?branch=master)](https://travis-ci.org/ruohki/harlekings-bot)
 
 Vorbereitung
 ---
