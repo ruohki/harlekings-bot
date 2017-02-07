@@ -14,7 +14,7 @@ const validChannel = [
 export class Move extends Command {  
     getParameter() {
         return {
-            Aliases: ['move', 'switch'],
+            Aliases: ['move', 'join', 'switch'],
             Help: '[person]',
             SubCommands: {},
 
