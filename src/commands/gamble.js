@@ -52,9 +52,9 @@ export class Gamble extends Command {
             message.channel.sendMessage(`${author.toString()} hat eine **${number}** gewürfelt [1-${max}] :game_die: `);
         } else if (payload.match(/^[0-9]{1,}\-[0-9]{1,}$/)) {
             let minmax = payload.split('-');
-                                
-            let min = parseInt(minmax[0]) < parseInt(minmax[1]) ? parseInt(minmax[0]) : parseInt(minmax[1]);
-            let max = parseInt(minmax[1]) > parseInt(minmax[0]) ? parseInt(minmax[1]) : parseInt(minmax[0]);
+                      
+            let min = Math.min(parseInt(minmax[0]), parseInt(minmax[1]));
+            let max = Math.max(parseInt(minmax[0]), parseInt(minmax[1]));
             
             let number = Math.floor(Math.random() * (max - min + 1)) + min;
             
