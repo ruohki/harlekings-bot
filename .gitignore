@@ -1,5 +1,4 @@
 node_modules/
-dist/
 .backup/
 npm-debug.log
 config.json
