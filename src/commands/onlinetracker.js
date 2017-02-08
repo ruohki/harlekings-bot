@@ -135,15 +135,11 @@ export class OnlineTracker extends Command {
                         let lastOnline = doc.online || 0;
 
                         if (lastOffline > lastOnline) {
-                            message.channel.sendMessage([
-                                                     `Member: ${doc.nickname}`,
-                                                     `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`,                                                     
-                                                    ].join('\r\n'));
+                            message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                         `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
                         } else {
-                            message.channel.sendMessage([
-                                                     `Member: ${doc.nickname}`,
-                                                     `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`,                                                     
-                                                    ].join('\r\n'));
+                            message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                         `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
                         }          
                     } else {
                         message.channel.sendMessage(`Ich habe keine Daten zu diesen Member.`);
@@ -160,15 +156,11 @@ export class OnlineTracker extends Command {
                             let lastOnline = doc.online;
 
                             if (lastOffline > lastOnline) {
-                                message.channel.sendMessage([
-                                                            `Member: ${doc.nickname}`,
-                                                            `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`,                                                     
-                                                        ].join('\r\n'));
+                                message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                             `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
                             } else {
-                                message.channel.sendMessage([
-                                                            `Member: ${doc.nickname}`,
-                                                            `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`,                                                     
-                                                        ].join('\r\n'));
+                                message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                             `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
                             }     
                         });                             
                     } else {
