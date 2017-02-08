@@ -3,4 +3,4 @@ dist/
 .backup/
 npm-debug.log
 config.json
-
+config.*
