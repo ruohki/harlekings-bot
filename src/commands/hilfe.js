@@ -47,7 +47,7 @@ export class Hilfe extends Command {
                 let test = [];
                 let info = val.getParameter();
                 
-                if (info.Aliases.length > 1) {
+                if ((info.Aliases.length) > 1 && !(info.hide)) {
                     if (info.Aliases.includes(sub)) {                    
                         test.push(`${info.Aliases[0]}\t${info.Help}`);
                         test.push(`\tAlias: ${info.Aliases.join(', ')}`);            

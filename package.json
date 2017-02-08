@@ -20,10 +20,12 @@
     "discord.js": "^11.0.0",
     "express": "^4.14.0",
     "moment": "^2.17.1",
+    "mongoose": "^4.8.1",
     "opusscript": "0.0.1",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "twitch.tv": "^2.0.1",
+    "validator": "^6.2.1",
     "ytdl-core": "^0.7.21"
   },
   "engines": {
