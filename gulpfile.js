@@ -13,6 +13,6 @@ gulp.task("build", () => {
     .pipe(gulp.dest("dist"));
 })
 
-gulp.task('clean-build', ['clean', 'build']);
+gulp.task('clean-build', ['build']);
 gulp.task("default", ['clean-build']);
 gulp.task("heroku", ['default']);

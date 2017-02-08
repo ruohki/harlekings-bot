@@ -10,15 +10,7 @@ import 'moment/locale/de';
 import { Command } from '../bot';
 import { LogMessage } from '../util.js';
 
-const Schema = mongoose.Schema;
-let MemberInfoSchema = new Schema({
-    _id: String,
-    online: Date,
-    offline: Date,
-    nickname: String
-});
-MemberInfoSchema.virtual('snowflake').get(function() { return this._id; });
-const MemberInfo = mongoose.model('Memberinfo', MemberInfoSchema);
+import  { MemberInfo }  from '../models.js';
 
 const validChannel = [
     '253894698433773569',
@@ -47,39 +39,32 @@ export class OnlineTracker extends Command {
     }
 
     initialize = () => {
-        let self = this;
         if (process.env.MONGO) {                        
-            mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}});                        
-            const Mongo = mongoose.connection;
-
-            Mongo.on('error', error => LogMessage('error', error));
-            Mongo.on('disconnected', () => mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}}));
-
-            Mongo.once('open', () => {
-                self.Client.on('presenceUpdate', ( oldUser, newUser) => {            
-                    if ( (newUser.presence.status === "offline") ) {            
-                        MemberInfo.findOneAndUpdate({
-                            _id: newUser.id
-                        }, {
-                            _id: newUser.id,
-                            offline: Date.now(),
-                            nickname: newUser.displayName
-                        }, {upsert:true}, (err, doc) => {
-                            if (err) return LogMessage('error', err);                            
-                        });
-                    } else if ( (newUser.presence.status === "online")) {
-                        MemberInfo.findOneAndUpdate({
-                            _id: newUser.id
-                        }, {
-                            _id: newUser.id,
-                            online: Date.now(),
-                            nickname: newUser.displayName
-                        }, {upsert:true}, (err, doc) => {
-                            if (err) return LogMessage('error', err);                            
-                        });
-                    }
-                });
-            });            
+                        
+            this.Client.on('presenceUpdate', ( oldUser, newUser) => {            
+                if ( (newUser.presence.status === "offline") ) {            
+                    MemberInfo.findOneAndUpdate({
+                        _id: newUser.id
+                    }, {
+                        _id: newUser.id,
+                        offline: Date.now(),
+                        nickname: newUser.displayName
+                    }, {upsert:true}, (err, doc) => {
+                        if (err) return LogMessage('error', err);                            
+                    });
+                } else if ( (newUser.presence.status === "online")) {
+                    MemberInfo.findOneAndUpdate({
+                        _id: newUser.id
+                    }, {
+                        _id: newUser.id,
+                        online: Date.now(),
+                        nickname: newUser.displayName
+                    }, {upsert:true}, (err, doc) => {
+                        if (err) return LogMessage('error', err);                            
+                    });
+                }
+            });
+                 
         }        
 
         return process.env.MONGO ? true : false;
@@ -135,15 +120,11 @@ export class OnlineTracker extends Command {
                         let lastOnline = doc.online || 0;
 
                         if (lastOffline > lastOnline) {
-                            message.channel.sendMessage([
-                                                     `Member: ${doc.nickname}`,
-                                                     `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`,                                                     
-                                                    ].join('\r\n'));
+                            message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                         `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
                         } else {
-                            message.channel.sendMessage([
-                                                     `Member: ${doc.nickname}`,
-                                                     `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`,                                                     
-                                                    ].join('\r\n'));
+                            message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                         `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
                         }          
                     } else {
                         message.channel.sendMessage(`Ich habe keine Daten zu diesen Member.`);
@@ -151,7 +132,7 @@ export class OnlineTracker extends Command {
                 }); 
             } else {
                 MemberInfo.find({
-                    nickname: {'$regex': pices[1]}
+                    nickname: {'$regex': new RegExp(pices[1], "i")}
                 }, (err, docs) => {
                     if (err) return LogMessage('error', err);
                     if (docs.length > 0) {
@@ -160,15 +141,11 @@ export class OnlineTracker extends Command {
                             let lastOnline = doc.online;
 
                             if (lastOffline > lastOnline) {
-                                message.channel.sendMessage([
-                                                            `Member: ${doc.nickname}`,
-                                                            `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`,                                                     
-                                                        ].join('\r\n'));
+                                message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                             `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
                             } else {
-                                message.channel.sendMessage([
-                                                            `Member: ${doc.nickname}`,
-                                                            `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`,                                                     
-                                                        ].join('\r\n'));
+                                message.channel.sendMessage([`Member: ${doc.nickname}`,
+                                                             `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
                             }     
                         });                             
                     } else {
