@@ -18,7 +18,7 @@ let MemberInfoSchema = new Schema({
     nickname: String
 });
 MemberInfoSchema.virtual('snowflake').get(function() { return this._id; });
-const MemberInfo = mongoose.model('Memberinfo', MemberInfoSchema);
+MemberInfo = mongoose.model('Memberinfo', MemberInfoSchema);
 
 const validChannel = [
     '253894698433773569',
@@ -50,7 +50,7 @@ export class OnlineTracker extends Command {
         let self = this;
         if (process.env.MONGO) {                        
             mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}});                        
-            const Mongo = mongoose.connection;
+            Mongo = mongoose.connection;
 
             Mongo.on('error', error => LogMessage('error', error));
             Mongo.on('disconnected', () => mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}}));
