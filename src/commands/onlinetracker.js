@@ -49,10 +49,12 @@ export class OnlineTracker extends Command {
     initialize = () => {
         let self = this;
         if (process.env.MONGO) {                        
-            mongoose.connect(process.env.MONGO);                        
+            mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}});                        
             const Mongo = mongoose.connection;
 
             Mongo.on('error', error => LogMessage('error', error));
+            Mongo.on('disconnected', () => mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}}));
+
             Mongo.once('open', () => {
                 self.Client.on('presenceUpdate', ( oldUser, newUser) => {            
                     if ( (newUser.presence.status === "offline") ) {            
