@@ -151,7 +151,7 @@ export class OnlineTracker extends Command {
                 }); 
             } else {
                 MemberInfo.find({
-                    nickname: {'$regex': pices[1]}
+                    nickname: {'$regex': new RegExp(pices[1], "i")}
                 }, (err, docs) => {
                     if (err) return LogMessage('error', err);
                     if (docs.length > 0) {
