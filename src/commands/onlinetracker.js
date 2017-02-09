@@ -10,15 +10,7 @@ import 'moment/locale/de';
 import { Command } from '../bot';
 import { LogMessage } from '../util.js';
 
-const Schema = mongoose.Schema;
-let MemberInfoSchema = new Schema({
-    _id: String,
-    online: Date,
-    offline: Date,
-    nickname: String
-});
-MemberInfoSchema.virtual('snowflake').get(function() { return this._id; });
-const MemberInfo = mongoose.model('Memberinfo', MemberInfoSchema);
+import  { MemberInfo }  from './models.js';
 
 const validChannel = [
     '253894698433773569',
@@ -46,58 +38,51 @@ export class OnlineTracker extends Command {
         } 
     }
 
-    initialize = () => {
-        let self = this;
+    initialize = () => {        
         if (process.env.MONGO) {                        
-            mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}});                        
-            let Mongo = mongoose.connection;
 
-            Mongo.on('error', error => LogMessage('error', error));
-            Mongo.on('disconnected', () => mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}}));
-
-            Mongo.once('open', () => {
-                self.Client.on('presenceUpdate', ( oldUser, newUser) => {            
-                    if ( (newUser.presence.status === "offline") ) {            
-                        MemberInfo.findOneAndUpdate({
-                            _id: newUser.id
-                        }, {
-                            _id: newUser.id,
-                            offline: Date.now(),
-                            nickname: newUser.displayName
-                        }, {upsert:true}, (err, doc) => {
-                            if (err) return LogMessage('error', err);                            
-                        });
-                    } else if ( (newUser.presence.status === "online")) {
-                        MemberInfo.findOneAndUpdate({
-                            _id: newUser.id
-                        }, {
-                            _id: newUser.id,
-                            online: Date.now(),
-                            nickname: newUser.displayName
-                        }, {upsert:true}, (err, doc) => {
-                            if (err) return LogMessage('error', err);                            
-                        });
-                    }
-                });
-
-                self.Client.on('message', message => {
-                    let words = message.content.split(' ').length;
-                    let chars = message.content.length;
-
+            this.Client.on('presenceUpdate', ( oldUser, newUser) => {            
+                if ( (newUser.presence.status === "offline") ) {            
                     MemberInfo.findOneAndUpdate({
-                        _id: message.author.id
+                        _id: newUser.id
                     }, {
-                        _id: message.author.id,                        
-                        nickname: newUser.displayName,
-                        $inc: {
-                            chars,
-                            words
-                        }                        
+                        _id: newUser.id,
+                        offline: Date.now(),
+                        nickname: newUser.displayName
                     }, {upsert:true}, (err, doc) => {
                         if (err) return LogMessage('error', err);                            
                     });
+                } else if ( (newUser.presence.status === "online")) {
+                    MemberInfo.findOneAndUpdate({
+                        _id: newUser.id
+                    }, {
+                        _id: newUser.id,
+                        online: Date.now(),
+                        nickname: newUser.displayName
+                    }, {upsert:true}, (err, doc) => {
+                        if (err) return LogMessage('error', err);                            
+                    });
+                }
+            });
+
+            this.Client.on('message', message => {
+                let words = message.content.split(' ').length;
+                let chars = message.content.length;
+
+                MemberInfo.findOneAndUpdate({
+                    _id: message.author.id
+                }, {
+                    _id: message.author.id,                        
+                    nickname: newUser.displayName,
+                    $inc: {
+                        chars,
+                        words
+                    }                        
+                }, {upsert:true}, (err, doc) => {
+                    if (err) return LogMessage('error', err);                            
                 });
-            });            
+            });
+                      
         }        
 
         return process.env.MONGO ? true : false;
