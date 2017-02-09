@@ -66,6 +66,8 @@ export class OnlineTracker extends Command {
             });
 
             this.Client.on('message', message => {
+                if (message.author.bot) return true;
+                
                 let words = message.content.split(' ').length;
                 let chars = message.content.length;
 
