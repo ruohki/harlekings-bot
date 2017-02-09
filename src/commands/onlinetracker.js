@@ -85,9 +85,9 @@ export class OnlineTracker extends Command {
                     let chars = message.content.length;
 
                     MemberInfo.findOneAndUpdate({
-                        _id: newUser.id
+                        _id: message.author.id
                     }, {
-                        _id: newUser.id,                        
+                        _id: message.author.id,                        
                         nickname: newUser.displayName,
                         $inc: {
                             chars,
