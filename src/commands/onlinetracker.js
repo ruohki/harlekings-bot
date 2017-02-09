@@ -10,7 +10,7 @@ import 'moment/locale/de';
 import { Command } from '../bot';
 import { LogMessage } from '../util.js';
 
-import  { MemberInfo }  from './models.js';
+import  { MemberInfo }  from '../models.js';
 
 const validChannel = [
     '253894698433773569',
