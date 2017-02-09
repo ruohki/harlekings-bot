@@ -67,6 +67,25 @@ class OnlineTracker extends _bot.Command {
                         });
                     }
                 });
+
+                this.Client.on('message', message => {
+                    if (message.author.bot) return true;
+
+                    let words = message.content.split(' ').length;
+                    let chars = message.content.length;
+
+                    _models.MemberInfo.findOneAndUpdate({
+                        _id: message.author.id
+                    }, {
+                        _id: message.author.id,
+                        $inc: {
+                            chars,
+                            words
+                        }
+                    }, { upsert: true }, (err, doc) => {
+                        if (err) return (0, _util.LogMessage)('error', err);
+                    });
+                });
             }
 
             return process.env.MONGO ? true : false;

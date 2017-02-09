@@ -30,4 +30,4 @@ webserver.Serve();
 
 // Bot Initialisieren und Starten
 let bot = new _bot2.default();
-//bot.Init();
+bot.Init();
