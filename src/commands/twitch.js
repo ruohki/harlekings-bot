@@ -55,8 +55,8 @@ export class TwitchTV extends Command {
             clientID: clientId
         }, (err, res) => {
             if (err) return console.log(err);
-            console.log(Date.now().toString())
-            console.log(res);
+            //console.log(Date.now().toString())
+            //console.log(res);
             if (res.stream === null && this.twitchResponse.stream !== null) {
                 // -> Offline 
                 advertiseChannel.map( channelId => {
