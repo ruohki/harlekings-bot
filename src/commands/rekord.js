@@ -14,7 +14,7 @@ export class Gamble extends Command {
             Help: '<blank>, [sub]',
             SubCommands: {
                 'words': 'Gibt aus wer die meißten Wörter geschrieben hat.',
-                'chars': 'Gibt aus wer die meißten Buchstaben und Zeichen geschriebene hat.'
+                'chars': 'Gibt aus wer die meißten Buchstaben und Zeichen geschrieben hat.'
             },
 
             name: 'rekord',
