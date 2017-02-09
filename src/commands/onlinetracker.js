@@ -72,8 +72,7 @@ export class OnlineTracker extends Command {
                 MemberInfo.findOneAndUpdate({
                     _id: message.author.id
                 }, {
-                    _id: message.author.id,                        
-                    nickname: newUser.displayName,
+                    _id: message.author.id,                                            
                     $inc: {
                         chars,
                         words
