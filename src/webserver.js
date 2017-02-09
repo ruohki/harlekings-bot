@@ -100,7 +100,7 @@ export default class WebServer {
             const host = this.server.address().address;
             const port = this.server.address().port;
             
-            this.app.use(express.static('public'));
+            this.app.use(express.static('../web_root/'));
 
             LogMessage('info', `WebServer gestartet: http://${host}:${port}`);            
         });
