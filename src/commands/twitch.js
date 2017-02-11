@@ -69,7 +69,7 @@ export class TwitchTV extends Command {
                     let channel = this.Client.guilds.get('252815455096406017').channels.get(channelId)
 
                     let embed = this.getEmbed(res);
-                    channel.sendEmbed(embed, '@everyone');
+                    channel.sendEmbed(embed);
                 });
             }
 
