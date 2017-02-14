@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import Twitch from 'twitch.tv';
+import uuidV4 from 'uuid/v4';
 
 import request from 'request';
 
@@ -44,8 +45,10 @@ export class TwitchTV extends Command {
             stream: null
         }
 
-        this.intervalHandle = setInterval(() => this.queryTwitch(this), 30000);
-        
+        if (!this.intervalHandle) {
+            this.intervalHandle = setInterval(() => this.queryTwitch(this), 60000);
+        }
+
         return true;
     } 
 
@@ -78,6 +81,7 @@ export class TwitchTV extends Command {
     }
     
     getEmbed(data) {
+
         return new Discord.RichEmbed()
             .setTitle('Wir sind [LIVE]')                        
             /*
@@ -86,7 +90,7 @@ export class TwitchTV extends Command {
             .setColor(0x2776DC)
             .setDescription(data.stream.channel.status)
             .setFooter(data.stream.channel.url, data.stream.channel.url)
-            .setImage(data.stream.preview.large)
+            .setImage(`http://ruohki.de/twitch/${uuidV4()}`)
             .setThumbnail(data.stream.channel.logo)
             /*
             * Takes a Date object, defaults to current date.
