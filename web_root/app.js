@@ -165,12 +165,8 @@
                     </div>
                     <div className="col-sm-12">
                         <ul className="list-group">
-                            {hasUser ? user.map( (user) => {
-                                if (user.online) {
-                                    return (<li className="list-group-item">{`${user.member} online seit ${user.online}`}</li>)
-                                } else {
-                                    return (<li className="list-group-item">{`${user.member} offline seit ${user.offline}`}</li>)
-                                }                                
+                            {hasUser ? user.map( (user) => {                                
+                                return (<li className="list-group-item">{`${user.member} zuletzt aktiv am ${user.lastActive}`}</li>)                              
                             }) :
                                 <li className="list-group-item">{`Keine Benutzer gefunden`}</li>
                             }                            
