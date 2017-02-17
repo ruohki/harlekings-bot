@@ -41,21 +41,21 @@ export default class WebServer {
                     _id: pice
                 }, (err, doc) => {
                     if (err) return LogMessage('error', err);
-                    if (doc) {
-                        let lastOffline = doc.offline || 0;
-                        let lastOnline = doc.online || 0;
+                    if (doc) {   
+                        
+                        let games = []
+                        if (doc.games) {
+                            Object.keys(doc.games).map( (key, i) => {
+                                games.push({name: key, lastActive: moment(doc.games[key]).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss')});                                
+                            })
+                        }
 
-                        if (lastOffline > lastOnline) {
-                            return res.json({success: true, result: [{
-                                member: doc.nickname,
-                                offline: moment(doc.offline).locale('de').toNow(true)
-                            }]});                            
-                        } else {
-                            return res.json({success: true, result: [{
-                                member: doc.nickname,
-                                online: moment(doc.online).locale('de').toNow(true)
-                            }]});
-                        }          
+                        message.channel.sendMessage(lines.join('\r\n'));                     
+                        return res.json({success: true, result: [{
+                            member: doc.nickname,
+                            lastActive: moment(doc.lastActive).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss'),
+                            games
+                        }]});                                                        
                     } else {
                         return res.json({success: false, result: 'member nicht gefunden'})                            
                     }                    
@@ -67,21 +67,11 @@ export default class WebServer {
                     if (err) return LogMessage('error', err);
                     if (docs.length > 0) {
                         let object = []
-                        docs.map( (doc) => {
-                            let lastOffline = doc.offline;
-                            let lastOnline = doc.online;
-
-                            if (lastOffline > lastOnline) {
-                                object.push({
-                                    member: doc.nickname,
-                                    offline: moment(doc.offline).locale('de').toNow(true)
-                                });                                    
-                            } else {
-                                object.push({
-                                    member: doc.nickname,
-                                    online: moment(doc.online).locale('de').toNow(true)
-                                });
-                            }     
+                        docs.map( (doc) => {                           
+                            object.push({
+                                member: doc.nickname,
+                                lastActive: moment(doc.lastActive).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss')
+                            });                                                                 
                         });
                         return res.json({success: true, result: object});                        
                     } else {

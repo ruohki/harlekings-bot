@@ -116,9 +116,11 @@ export class OnlineTracker extends Command {
                         let lines = [`Member: **${doc.nickname}**`,
                                      `Zuletzt aktiv am ${moment(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`]
                         
-                        Object.keys(doc.games).map( (key, i) => {
-                            lines.push(`${key} gespielt am ${moment(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${moment(doc.games[key]).locale('de').fromNow()}**`);
-                        })
+                        if (doc.games) {
+                            Object.keys(doc.games).map( (key, i) => {
+                                lines.push(`${key} gespielt am ${moment(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${moment(doc.games[key]).locale('de').fromNow()}**`);
+                            })
+                        }
 
                         message.channel.sendMessage(lines.join('\r\n'));
                         
