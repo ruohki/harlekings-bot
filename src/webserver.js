@@ -49,8 +49,7 @@ export default class WebServer {
                                 games.push({name: key, lastActive: moment(doc.games[key]).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss')});                                
                             })
                         }
-
-                        message.channel.sendMessage(lines.join('\r\n'));                     
+                                     
                         return res.json({success: true, result: [{
                             member: doc.nickname,
                             lastActive: moment(doc.lastActive).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss'),
