@@ -41,24 +41,30 @@ export class OnlineTracker extends Command {
     initialize = () => {        
         if (process.env.MONGO) {                        
 
-            this.Client.on('presenceUpdate', ( oldUser, newUser) => {            
-                if ( (newUser.presence.status === "offline") ) {            
+            this.Client.on('presenceUpdate', ( oldUser, newUser) => {                            
+                if (oldUser.presence.game !== null) {
+                    
+                    let nestedGameProp = `games.${oldUser.presence.game.name}`
+                    let queryObj = {
+                        _id: newUser.id,
+                        lastActive: Date.now(),
+                        nickname: newUser.displayName,
+                    }
+                    queryObj[nestedGameProp] = new Date().toISOString()
+                    
                     MemberInfo.findOneAndUpdate({
                         _id: newUser.id
-                    }, {
-                        _id: newUser.id,
-                        offline: Date.now(),
-                        nickname: newUser.displayName
-                    }, {upsert:true}, (err, doc) => {
+                    }, queryObj, 
+                    {upsert:true}, (err, doc) => {
                         if (err) return LogMessage('error', err);                            
                     });
-                } else if ( (newUser.presence.status === "online")) {
+                } else {
                     MemberInfo.findOneAndUpdate({
                         _id: newUser.id
                     }, {
                         _id: newUser.id,
-                        online: Date.now(),
-                        nickname: newUser.displayName
+                        lastActive: Date.now(),
+                        nickname: newUser.displayName,                            
                     }, {upsert:true}, (err, doc) => {
                         if (err) return LogMessage('error', err);                            
                     });
@@ -74,7 +80,8 @@ export class OnlineTracker extends Command {
                 MemberInfo.findOneAndUpdate({
                     _id: message.author.id
                 }, {
-                    _id: message.author.id,                                            
+                    _id: message.author.id,   
+                    lastActive: Date.now(),                                                             
                     $inc: {
                         chars,
                         words
@@ -90,35 +97,6 @@ export class OnlineTracker extends Command {
     }
 
     executeCommand = ( message ) => {
-        /*message.guild.members.map( (member) => {
-            let start = new Date();
-                start.setHours(0,0,0,0);
-            if (member.presence.status === 'offline') {
-                MemberInfo.findOneAndUpdate({
-                    _id: member.id
-                }, {
-                    _id: member.id, 
-                    online: start,               
-                    offline: Date.now(),                    
-                    nickname: member.displayName
-                }, {upsert:true}, (err, doc) => {
-                    if (err) return LogMessage('error', err);                            
-                });
-            } else {
-                
-                MemberInfo.findOneAndUpdate({
-                    _id: member.id
-                }, {
-                    _id: member.id,                
-                    online: Date.now(), 
-                    offline: start,                
-                    nickname: member.displayName
-                }, {upsert:true}, (err, doc) => {
-                    if (err) return LogMessage('error', err);                            
-                });
-            }
-        });*/
-
         if (!validChannel.includes(message.channel.id)) {
             let channels = []
             validChannel.map( channel => channels.push(`<#${channel}>`));
@@ -135,16 +113,15 @@ export class OnlineTracker extends Command {
                 }, (err, doc) => {
                     if (err) return LogMessage('error', err);
                     if (doc) {
-                        let lastOffline = doc.offline || 0;
-                        let lastOnline = doc.online || 0;
+                        let lines = [`Member: **${doc.nickname}**`,
+                                     `Zuletzt aktiv am ${moment(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`]
+                        
+                        Object.keys(doc.games).map( (key, i) => {
+                            lines.push(`${key} gespielt am ${moment(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${moment(doc.games[key]).locale('de').fromNow()}**`);
+                        })
 
-                        if (lastOffline > lastOnline) {
-                            message.channel.sendMessage([`Member: ${doc.nickname}`,
-                                                         `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
-                        } else {
-                            message.channel.sendMessage([`Member: ${doc.nickname}`,
-                                                         `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
-                        }          
+                        message.channel.sendMessage(lines.join('\r\n'));
+                        
                     } else {
                         message.channel.sendMessage(`Ich habe keine Daten zu diesen Member.`);
                     }                    
@@ -156,19 +133,11 @@ export class OnlineTracker extends Command {
                     if (err) return LogMessage('error', err);
                     if (docs.length > 0) {
                         docs.map( (doc) => {
-                            let lastOffline = doc.offline;
-                            let lastOnline = doc.online;
-
-                            if (lastOffline > lastOnline) {
-                                message.channel.sendMessage([`Member: ${doc.nickname}`,
-                                                             `*Offline* seit **${moment(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
-                            } else {
-                                message.channel.sendMessage([`Member: ${doc.nickname}`,
-                                                             `**Online** seit **${moment(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
-                            }     
+                            message.channel.sendMessage([`Member: **${doc.nickname}**`,
+                                                         `Zuletzt aktiv am ${moment(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`].join('\r\n'));
                         });                             
                     } else {
-                        message.channel.sendMessage(`Ich habe keine Daten zu diesen/diesen Member(n).`);
+                        message.channel.sendMessage(`Ich habe keine Daten zu diesen/diesem Member(n).`);
                     }   
                 });                           
             }            
