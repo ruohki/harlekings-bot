@@ -45,22 +45,27 @@ class OnlineTracker extends _bot.Command {
             if (process.env.MONGO) {
 
                 this.Client.on('presenceUpdate', (oldUser, newUser) => {
-                    if (newUser.presence.status === "offline") {
+                    if (oldUser.presence.game !== null) {
+
+                        let nestedGameProp = `games.${oldUser.presence.game.name}`;
+                        let queryObj = {
+                            _id: newUser.id,
+                            lastActive: Date.now(),
+                            nickname: newUser.displayName
+                        };
+                        queryObj[nestedGameProp] = new Date().toISOString();
+
                         _models.MemberInfo.findOneAndUpdate({
                             _id: newUser.id
-                        }, {
-                            _id: newUser.id,
-                            offline: Date.now(),
-                            nickname: newUser.displayName
-                        }, { upsert: true }, (err, doc) => {
+                        }, queryObj, { upsert: true }, (err, doc) => {
                             if (err) return (0, _util.LogMessage)('error', err);
                         });
-                    } else if (newUser.presence.status === "online") {
+                    } else {
                         _models.MemberInfo.findOneAndUpdate({
                             _id: newUser.id
                         }, {
                             _id: newUser.id,
-                            online: Date.now(),
+                            lastActive: Date.now(),
                             nickname: newUser.displayName
                         }, { upsert: true }, (err, doc) => {
                             if (err) return (0, _util.LogMessage)('error', err);
@@ -78,6 +83,7 @@ class OnlineTracker extends _bot.Command {
                         _id: message.author.id
                     }, {
                         _id: message.author.id,
+                        lastActive: Date.now(),
                         $inc: {
                             chars,
                             words
@@ -90,35 +96,6 @@ class OnlineTracker extends _bot.Command {
 
             return process.env.MONGO ? true : false;
         }, this.executeCommand = message => {
-            /*message.guild.members.map( (member) => {
-                let start = new Date();
-                    start.setHours(0,0,0,0);
-                if (member.presence.status === 'offline') {
-                    MemberInfo.findOneAndUpdate({
-                        _id: member.id
-                    }, {
-                        _id: member.id, 
-                        online: start,               
-                        offline: Date.now(),                    
-                        nickname: member.displayName
-                    }, {upsert:true}, (err, doc) => {
-                        if (err) return LogMessage('error', err);                            
-                    });
-                } else {
-                    
-                    MemberInfo.findOneAndUpdate({
-                        _id: member.id
-                    }, {
-                        _id: member.id,                
-                        online: Date.now(), 
-                        offline: start,                
-                        nickname: member.displayName
-                    }, {upsert:true}, (err, doc) => {
-                        if (err) return LogMessage('error', err);                            
-                    });
-                }
-            });*/
-
             if (!validChannel.includes(message.channel.id)) {
                 let channels = [];
                 validChannel.map(channel => channels.push(`<#${channel}>`));
@@ -135,14 +112,13 @@ class OnlineTracker extends _bot.Command {
                     }, (err, doc) => {
                         if (err) return (0, _util.LogMessage)('error', err);
                         if (doc) {
-                            let lastOffline = doc.offline || 0;
-                            let lastOnline = doc.online || 0;
+                            let lines = [`Member: ${doc.nickname}`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`];
 
-                            if (lastOffline > lastOnline) {
-                                message.channel.sendMessage([`Member: ${doc.nickname}`, `*Offline* seit **${(0, _moment2.default)(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
-                            } else {
-                                message.channel.sendMessage([`Member: ${doc.nickname}`, `**Online** seit **${(0, _moment2.default)(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
-                            }
+                            Object.keys(doc.games).map((key, i) => {
+                                lines.push(`${key} am ${(0, _moment2.default)(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${(0, _moment2.default)(doc.games[key]).locale('de').fromNow()}**`);
+                            });
+
+                            message.channel.sendMessage(lines.join('\r\n'));
                         } else {
                             message.channel.sendMessage(`Ich habe keine Daten zu diesen Member.`);
                         }
@@ -154,17 +130,10 @@ class OnlineTracker extends _bot.Command {
                         if (err) return (0, _util.LogMessage)('error', err);
                         if (docs.length > 0) {
                             docs.map(doc => {
-                                let lastOffline = doc.offline;
-                                let lastOnline = doc.online;
-
-                                if (lastOffline > lastOnline) {
-                                    message.channel.sendMessage([`Member: ${doc.nickname}`, `*Offline* seit **${(0, _moment2.default)(doc.offline).locale('de').toNow(true)}**`].join('\r\n'));
-                                } else {
-                                    message.channel.sendMessage([`Member: ${doc.nickname}`, `**Online** seit **${(0, _moment2.default)(doc.online).locale('de').toNow(true)}**`].join('\r\n'));
-                                }
+                                message.channel.sendMessage([`Member: ${doc.nickname}`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`].join('\r\n'));
                             });
                         } else {
-                            message.channel.sendMessage(`Ich habe keine Daten zu diesen/diesen Member(n).`);
+                            message.channel.sendMessage(`Ich habe keine Daten zu diesen/diesem Member(n).`);
                         }
                     });
                 }

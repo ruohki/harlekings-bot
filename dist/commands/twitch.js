@@ -13,6 +13,10 @@ var _twitch = require('twitch.tv');
 
 var _twitch2 = _interopRequireDefault(_twitch);
 
+var _v = require('uuid/v4');
+
+var _v2 = _interopRequireDefault(_v);
+
 var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
@@ -23,12 +27,14 @@ var _util = require('../util.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const advertiseChannel = ['253510173459480578'];
+const advertiseChannel = [
+/*'253510173459480578'*/
+'252815455096406017', '273811577768116224'];
 
 const clientId = 'y8jx3f82gv6mnsg5zr7636amnbjrdn';
 //const channelUrl = 'https://api.twitch.tv/kraken/streams/Harlekings_TV';
-//const twitchChannelId = 'Harlekings_TV';
-const twitchChannelId = 'slavexxx2';
+const twitchChannelId = 'Harlekings_TV';
+//const twitchChannelId = 'slavexxx2';
 
 class TwitchTV extends _bot.Command {
     constructor(...args) {
@@ -39,7 +45,9 @@ class TwitchTV extends _bot.Command {
                 stream: null
             };
 
-            this.intervalHandle = setInterval(() => this.queryTwitch(this), 30000);
+            if (!this.intervalHandle) {
+                this.intervalHandle = setInterval(() => this.queryTwitch(this), 60000);
+            }
 
             return true;
         }, this.executeCommand = message => {
@@ -101,8 +109,8 @@ class TwitchTV extends _bot.Command {
             clientID: clientId
         }, (err, res) => {
             if (err) return console.log(err);
-            console.log(Date.now().toString());
-            console.log(res);
+            //console.log(Date.now().toString())
+            //console.log(res);
             if (res.stream === null && this.twitchResponse.stream !== null) {
                 // -> Offline 
                 advertiseChannel.map(channelId => {
@@ -115,7 +123,7 @@ class TwitchTV extends _bot.Command {
                     let channel = this.Client.guilds.get('252815455096406017').channels.get(channelId);
 
                     let embed = this.getEmbed(res);
-                    channel.sendEmbed(embed, '@everyone');
+                    channel.sendEmbed(embed);
                 });
             }
 
@@ -124,11 +132,12 @@ class TwitchTV extends _bot.Command {
     }
 
     getEmbed(data) {
+
         return new _discord2.default.RichEmbed().setTitle('Wir sind [LIVE]')
         /*
         * Alternatively, use '#00AE86', [0, 174, 134] or an integer number.
         */
-        .setColor(0x2776DC).setDescription(data.stream.channel.status).setFooter(data.stream.channel.url, data.stream.channel.url).setImage(data.stream.preview.large).setThumbnail(data.stream.channel.logo)
+        .setColor(0x2776DC).setDescription(data.stream.channel.status).setFooter(data.stream.channel.url, data.stream.channel.url).setImage(`http://ruohki.de/twitch/${(0, _v2.default)()}`).setThumbnail(data.stream.channel.logo)
         /*
         * Takes a Date object, defaults to current date.
         */
