@@ -84,7 +84,7 @@ export default class Bot extends EventEmitter {
         .then( (num) => LogMessage('info', `${num} Modul(e) geladen.`) );
 
         this.Client.on('error', err => LogMessage('error', err));
-        this.Client.on('disconnected', () => this.Client.login(process.env.TOKEN));
+        this.Client.on('disconnect', () => this.Client.login(process.env.TOKEN));
 
         this.Client.on('message', message => {
             if (message.content.substr(0, 1) === '!') {
