@@ -86,7 +86,7 @@ export default class Bot extends EventEmitter {
         this.Client.on('error', err => LogMessage('error', err));
         this.Client.on('disconnect', (e) => {
             LogMessage('error', `Closed: ${e.code }`);
-            this.Client.login(process.env.TOKEN);
+            process.exit();
         });
 
         this.Client.on('message', message => {
