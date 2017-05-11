@@ -41,7 +41,7 @@ export default class WebServer {
             this.bot.Client.fetchUser(targetUser).then(user => {
                 user.send(targetMessage);
                 return res.json({status: true});
-            }            
+            });         
         });
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel
