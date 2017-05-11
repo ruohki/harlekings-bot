@@ -31,7 +31,7 @@ export default class WebServer {
         // Error Handling
         if (!this.app) throw new Error('WebServer nicht Initialisiert');
 
-        this.app.post('/', (req, res) => {   
+        this.app.post('/messageUser', (req, res) => {   
             let { targetUser, targetMessage, passWord } = req.body;
 
             if (passWord !== "FroschFotze") {
@@ -42,6 +42,17 @@ export default class WebServer {
                 user.send(targetMessage);
                 return res.json({status: true});
             });         
+        });
+
+        this.app.post('/messageChannel', (req, res) => {             
+            let { targetChannel, targetMessage, passWord } = req.body;
+
+            if (passWord !== "FroschFotze") {
+                return res.json({status: false});
+            }                        
+            let Channel = this.bot.Client.guilds.get('252815455096406017').channels.get(targetChannel);            
+            Channel.send(targetMessage);
+            return res.json({status: true});                  
         });
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel
