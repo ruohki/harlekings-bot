@@ -15,10 +15,11 @@ let Mongo = mongoose.connection;
 Mongo.on('error', error => LogMessage('error', error));
 Mongo.on('disconnected', () => mongoose.connect(process.env.MONGO, {server:{auto_reconnect:true}}));
 
-// WebServer für Heroku Starten
-let webserver = new WebServer();
-webserver.Serve();
-
 // Bot Initialisieren und Starten
 let bot = new Bot();
 bot.Init();
+
+// WebServer für Heroku Starten
+let webserver = new WebServer(bot);
+webserver.Serve();
+

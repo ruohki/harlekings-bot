@@ -112,11 +112,13 @@ class OnlineTracker extends _bot.Command {
                     }, (err, doc) => {
                         if (err) return (0, _util.LogMessage)('error', err);
                         if (doc) {
-                            let lines = [`Member: ${doc.nickname}`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`];
+                            let lines = [`Member: **${doc.nickname}**`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`];
 
-                            Object.keys(doc.games).map((key, i) => {
-                                lines.push(`${key} am ${(0, _moment2.default)(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${(0, _moment2.default)(doc.games[key]).locale('de').fromNow()}**`);
-                            });
+                            if (doc.games) {
+                                Object.keys(doc.games).map((key, i) => {
+                                    lines.push(`${key} gespielt am ${(0, _moment2.default)(doc.games[key]).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')} - **${(0, _moment2.default)(doc.games[key]).locale('de').fromNow()}**`);
+                                });
+                            }
 
                             message.channel.sendMessage(lines.join('\r\n'));
                         } else {
@@ -130,7 +132,7 @@ class OnlineTracker extends _bot.Command {
                         if (err) return (0, _util.LogMessage)('error', err);
                         if (docs.length > 0) {
                             docs.map(doc => {
-                                message.channel.sendMessage([`Member: ${doc.nickname}`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`].join('\r\n'));
+                                message.channel.sendMessage([`Member: **${doc.nickname}**`, `Zuletzt aktiv am ${(0, _moment2.default)(doc.lastActive).locale('de').format('[**]DD. MMMM YYYY[**] [um] [**]HH:mm:ss[**]')}`].join('\r\n'));
                             });
                         } else {
                             message.channel.sendMessage(`Ich habe keine Daten zu diesen/diesem Member(n).`);
