@@ -24,10 +24,10 @@ let Mongo = _mongoose2.default.connection;
 Mongo.on('error', error => (0, _util.LogMessage)('error', error));
 Mongo.on('disconnected', () => _mongoose2.default.connect(process.env.MONGO, { server: { auto_reconnect: true } }));
 
-// WebServer für Heroku Starten
-let webserver = new _webserver2.default();
-webserver.Serve();
-
 // Bot Initialisieren und Starten
 let bot = new _bot2.default();
 bot.Init();
+
+// WebServer für Heroku Starten
+let webserver = new _webserver2.default(bot);
+webserver.Serve();

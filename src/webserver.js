@@ -16,12 +16,12 @@ export default class WebServer {
      * Erstellt eine neue Instanz des Webservers
      * @constructor
      */
-    constructor() {
+    constructor(bot) {
         this.app = express();
         this.app.use(bodyParser.json());
+        this.bot = bot
 
-
-        this.setupRoutes();
+        this.setupRoutes();        
     }
 
     /**
@@ -31,9 +31,21 @@ export default class WebServer {
         // Error Handling
         if (!this.app) throw new Error('WebServer nicht Initialisiert');
 
+        this.app.post('/', (req, res) => {   
+            let { targetUser, targetMessage, passWord } = req.body;
+
+            if (passWord !== "FroschFotze") {
+                return res.json({status: false});
+            }
+
+            this.bot.Client.fetchUser(targetUser).then(user => {
+                user.send(targetMessage);
+                return res.json({status: true});
+            });         
+        });
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel
-
+        
         this.app.get('/query', (req, res) => {
             let pice = req.query.user;
             if (validator.isNumeric(pice)) {
@@ -85,7 +97,7 @@ export default class WebServer {
      * Startet den WebServer
      */
     Serve() {
-        this.server = this.app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
+        this.server = this.app.listen(process.env.PORT || 4000, "0.0.0.0", () => {
             const host = this.server.address().address;
             const port = this.server.address().port;
             

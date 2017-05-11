@@ -32,14 +32,17 @@ var _models = require('./models.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 class WebServer {
     /**
      * Erstellt eine neue Instanz des Webservers
      * @constructor
      */
-    constructor() {
+    constructor(bot) {
         this.app = (0, _express2.default)();
         this.app.use(_bodyParser2.default.json());
+        this.bot = bot;
 
         this.setupRoutes();
     }
@@ -48,9 +51,29 @@ class WebServer {
      * Legt die Routen des Webservers fest
      */
     setupRoutes() {
+        var _this = this;
+
         // Error Handling
         if (!this.app) throw new Error('WebServer nicht Initialisiert');
 
+        this.app.post('/api', (() => {
+            var _ref = _asyncToGenerator(function* (req, res) {
+                let { targetUser, targetMessage, passWord } = req.body;
+
+                if (passWord !== "FroschFotze") {
+                    return res.json({ status: false });
+                }
+
+                let user = yield _this.bot.Client.fetchUser(targetUser);
+                user.send(targetMessage);
+
+                return res.json({ status: true });
+            });
+
+            return function (_x, _x2) {
+                return _ref.apply(this, arguments);
+            };
+        })());
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel
 
@@ -62,20 +85,19 @@ class WebServer {
                 }, (err, doc) => {
                     if (err) return (0, _util.LogMessage)('error', err);
                     if (doc) {
-                        let lastOffline = doc.offline || 0;
-                        let lastOnline = doc.online || 0;
 
-                        if (lastOffline > lastOnline) {
-                            return res.json({ success: true, result: [{
-                                    member: doc.nickname,
-                                    offline: (0, _moment2.default)(doc.offline).locale('de').toNow(true)
-                                }] });
-                        } else {
-                            return res.json({ success: true, result: [{
-                                    member: doc.nickname,
-                                    online: (0, _moment2.default)(doc.online).locale('de').toNow(true)
-                                }] });
+                        let games = [];
+                        if (doc.games) {
+                            Object.keys(doc.games).map((key, i) => {
+                                games.push({ name: key, lastActive: (0, _moment2.default)(doc.games[key]).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss') });
+                            });
                         }
+
+                        return res.json({ success: true, result: [{
+                                member: doc.nickname,
+                                lastActive: (0, _moment2.default)(doc.lastActive).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss'),
+                                games
+                            }] });
                     } else {
                         return res.json({ success: false, result: 'member nicht gefunden' });
                     }
@@ -88,20 +110,10 @@ class WebServer {
                     if (docs.length > 0) {
                         let object = [];
                         docs.map(doc => {
-                            let lastOffline = doc.offline;
-                            let lastOnline = doc.online;
-
-                            if (lastOffline > lastOnline) {
-                                object.push({
-                                    member: doc.nickname,
-                                    offline: (0, _moment2.default)(doc.offline).locale('de').toNow(true)
-                                });
-                            } else {
-                                object.push({
-                                    member: doc.nickname,
-                                    online: (0, _moment2.default)(doc.online).locale('de').toNow(true)
-                                });
-                            }
+                            object.push({
+                                member: doc.nickname,
+                                lastActive: (0, _moment2.default)(doc.lastActive).locale('de').format('DD. MMMM YYYY [um] HH:mm:ss')
+                            });
                         });
                         return res.json({ success: true, result: object });
                     } else {
@@ -116,7 +128,7 @@ class WebServer {
      * Startet den WebServer
      */
     Serve() {
-        this.server = this.app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
+        this.server = this.app.listen(process.env.PORT || 4000, "0.0.0.0", () => {
             const host = this.server.address().address;
             const port = this.server.address().port;
 

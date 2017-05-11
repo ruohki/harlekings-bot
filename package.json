@@ -6,7 +6,7 @@
   "scripts": {
     "build": "gulp default",
     "run": "node dist/app.js",
-    "buildrun": "gulp default && npm start",
+    "buildrun": "gulp default && config.cmd && npm start",
     "start": "cd dist && node app.js"
   },
   "repository": {

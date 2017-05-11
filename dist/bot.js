@@ -96,7 +96,10 @@ class Bot extends _events.EventEmitter {
         }).then(num => (0, _util.LogMessage)('info', `${num} Modul(e) geladen.`));
 
         this.Client.on('error', err => (0, _util.LogMessage)('error', err));
-        this.Client.on('disconnected', () => this.Client.login(process.env.TOKEN));
+        this.Client.on('disconnect', e => {
+            (0, _util.LogMessage)('error', `Closed: ${e.code}`);
+            process.exit();
+        });
 
         this.Client.on('message', message => {
             if (message.content.substr(0, 1) === '!') {
