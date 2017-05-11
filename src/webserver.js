@@ -31,17 +31,17 @@ export default class WebServer {
         // Error Handling
         if (!this.app) throw new Error('WebServer nicht Initialisiert');
 
-        this.app.post('/api', async (req, res) => {   
+        this.app.post('/', (req, res) => {   
             let { targetUser, targetMessage, passWord } = req.body;
 
             if (passWord !== "FroschFotze") {
                 return res.json({status: false});
             }
 
-            let user = await this.bot.Client.fetchUser(targetUser)
-            user.send(targetMessage);
-
-            return res.json({status: true});
+            this.bot.Client.fetchUser(targetUser).then(user => {
+                user.send(targetMessage);
+                return res.json({status: true});
+            }            
         });
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel
