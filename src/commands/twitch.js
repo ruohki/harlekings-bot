@@ -10,8 +10,8 @@ import { LogMessage } from '../util.js';
 
 const advertiseChannel = [
     /*'253510173459480578'*/
-    '252815455096406017',
-    '273811577768116224'
+    '252815455096406017',       // Allgemein
+    /*'273811577768116224'      // Twitch Kanal */
 ]
 
 const clientId = 'y8jx3f82gv6mnsg5zr7636amnbjrdn';
