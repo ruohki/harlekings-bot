@@ -11,6 +11,8 @@ import { LogMessage } from './util.js';
 
 import  { MemberInfo }  from './models.js';
 
+import Discord from 'discord.js';
+
 export default class WebServer {
     /**
      * Erstellt eine neue Instanz des Webservers
@@ -37,11 +39,19 @@ export default class WebServer {
             if (passWord !== "FroschFotze") {
                 return res.json({status: false});
             }
+            try {
+                this.bot.Client.fetchUser(targetUser, false).then(user => {
+                    /*console.log(user);
+                    const dmChannel = user.createDM();*/
+                    user.send(targetMessage)
+                    .then(message => console.log(`Sent message: ${message.content}`))
+                    .catch(console.error);
 
-            this.bot.Client.fetchUser(targetUser).then(user => {
-                user.send(targetMessage);
-                return res.json({status: true});
-            });         
+                    return res.json({status: true});
+                }); 
+            } catch(err) {
+                LogMessage(err);
+            }                    
         });
 
         this.app.post('/messageChannel', (req, res) => {             
@@ -53,6 +63,23 @@ export default class WebServer {
             let Channel = this.bot.Client.guilds.get('252815455096406017').channels.get(targetChannel);            
             Channel.send(targetMessage);
             return res.json({status: true});                  
+        });
+
+        this.app.post('/joinBewerber', async (req, res) => {
+            let { targetUser, token, passWord } = req.body;
+            if (passWord !== "FroschFotze") {
+                return res.json({status: false});
+            } 
+            try {
+                let guild = await this.bot.Client.guilds.get('252815455096406017');                
+                let user = await this.bot.Client.fetchUser(targetUser, false)
+                let guildMember = await guild.addMember(user, { accessToken: token,});
+                let roleResult = await guildMember.addRole('272847394410856448');
+                return res.json({status: roleResult});
+            } catch(err) {
+                LogMessage(err);
+            }   
+            
         });
         // Man könnte hier jetzt jede menge module usw einbinden da der webserver aber nur für 
         // Heroku existiert halten wir es simpel

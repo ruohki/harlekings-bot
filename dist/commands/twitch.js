@@ -29,7 +29,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const advertiseChannel = [
 /*'253510173459480578'*/
-'252815455096406017', '273811577768116224'];
+'252815455096406017'];
 
 const clientId = 'y8jx3f82gv6mnsg5zr7636amnbjrdn';
 //const channelUrl = 'https://api.twitch.tv/kraken/streams/Harlekings_TV';
