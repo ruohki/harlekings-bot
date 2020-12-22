@@ -26,7 +26,7 @@ class KickGuests extends _bot.Command {
         return _temp = super(...args), this.initialize = () => {
             this.Client.on('presenceUpdate', (oldUser, newUser) => {
                 if (newUser.presence.status === "offline" && newUser.roles.size <= 1) {
-                    newUser.sendMessage('Du wirst vom HarleKings Discord *entfernt*. Grund: Gäste dürfen bei uns **NICHT** idlen, unsichtbar oder offline sein. Stelle deinen Status auf **online** und verbinde dich erneut über http://discord.harlekings.com/.');
+                    newUser.sendMessage('Du wirst vom HarleKings Discord *entfernt*. Grund: Gäste dürfen bei uns **NICHT** idlen, unsichtbar oder offline sein. Stelle deinen Status auf **online** und verbinde dich erneut über https://discordapp.com/invite/2RaUZZ3.');
                     setTimeout(() => newUser.kick(), 1000);
                 }
             });
